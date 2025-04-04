@@ -20,29 +20,26 @@ function getUsageDetails($apiKey, $monthCount) {
         echo "Error: API key is required.\n";
         exit(1);
     }
-
     if (empty($monthCount) || !is_numeric($monthCount) || $monthCount < 1 || $monthCount > 6) {
         echo "Error: Month count must be a number between 1 and 6.\n";
         exit(1);
     }
 
-    // Calculate the date that is $monthCount months ago from today and the current time as UNIX timestamps
     $now = new DateTime('now', new DateTimeZone('UTC'));
     $startDate = (clone $now)->modify("-$monthCount months")->setTime(0, 0)->getTimestamp();
     $currentTimestamp = $now->getTimestamp();
-
-    $limit = min(30 * $monthCount, 180); // Ensure the limit does not exceed 180 days
+    $limit = min(30 * $monthCount, 180);
     $nextPage = null;
     $totalCost = 0.0;
-
+    $monthlyTotals = [];
+    $currentMonth = null;
     $firstFormattedDate = date('m/d/y', $startDate);
     $lastFormattedDate = null;
 
     do {
         $url = "https://api.openai.com/v1/organization/costs"
-             . "?start_time=$startDate&end_time=$currentTimestamp"
-             . "&limit=$limit";
-
+            . "?start_time=$startDate&end_time=$currentTimestamp"
+            . "&limit=$limit";
         if ($nextPage) {
             $url .= "&page=" . urlencode($nextPage);
         }
@@ -55,7 +52,6 @@ function getUsageDetails($apiKey, $monthCount) {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
         $response = curl_exec($ch);
 
         if (curl_errno($ch)) {
@@ -85,9 +81,9 @@ function getUsageDetails($apiKey, $monthCount) {
             return;
         }
 
-        // Process each bucket in the response
         foreach ($usageData['data'] as $bucket) {
             $bucketDate = date('m/d/y', $bucket['start_time']);
+            $bucketMonth = date('Y-m', $bucket['start_time']);
             $costForDay = 0.0;
 
             foreach ($bucket['results'] as $result) {
@@ -96,8 +92,21 @@ function getUsageDetails($apiKey, $monthCount) {
                 $costForDay += $amount;
             }
 
-            if ($costForDay > 0.0000001) { // Threshold to ignore negligible costs
+            if ($costForDay > 0.0000001) {
+                if ($currentMonth !== null && $currentMonth !== $bucketMonth) {
+                    echo sprintf("Total for %s: \$%.7f USD\n\n", $currentMonth, $monthlyTotals[$currentMonth]);
+                }
+
+                if ($currentMonth !== $bucketMonth) {
+                    $currentMonth = $bucketMonth;
+                }
+
                 echo sprintf("Date: %s \$%.7f %s\n", $bucketDate, $costForDay, strtoupper($currency));
+
+                if (!isset($monthlyTotals[$bucketMonth])) {
+                    $monthlyTotals[$bucketMonth] = 0.0;
+                }
+                $monthlyTotals[$bucketMonth] += $costForDay;
                 $totalCost += $costForDay;
             }
 
@@ -108,15 +117,13 @@ function getUsageDetails($apiKey, $monthCount) {
 
     } while ($nextPage);
 
+    if ($currentMonth && isset($monthlyTotals[$currentMonth])) {
+        echo sprintf("Total for %s: \$%.7f USD\n", $currentMonth, $monthlyTotals[$currentMonth]);
+    }
+
     if ($lastFormattedDate) {
         echo sprintf("\nTotal Cost %s to %s: \$%.7f USD\n", $firstFormattedDate, $lastFormattedDate, $totalCost);
     }
-}
-
-// Example usage
-if ($argc !== 3) {
-    echo "Usage: php script.php <API_KEY> <MONTH_COUNT>\n";
-    exit(1);
 }
 
 $apiKey = $argv[1];
