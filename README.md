@@ -43,5 +43,5 @@ https://platform.openai.com/settings/organization/admin-keys
 
 <p/>
 <a href="https://www.buymeacoffee.com/robwpdev" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a><br>
-If this module saves you time, helps your clients, or helps you do better work, I’d appreciate it.
+If this script saves you time, helps your clients, or helps you do better work, I’d appreciate it.
 </p>
