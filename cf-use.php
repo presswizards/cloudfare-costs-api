@@ -7,7 +7,9 @@
 */
 // Example usage to display last 3 months:
 // php sk-proj-your-admin-key-here 3
-// NOTE: MUST BE OPENAI ADMIN KEY NOT PROJECT KEY
+// NOTE: MUST BE OPENAI ADMIN KEY NOT PROJECT KEY:
+// https://platform.openai.com/settings/organization/admin-keys
+
 if ($argc !== 3) {
     echo "Usage: php script.php <API_KEY> <MONTH_COUNT>\n";
     exit(1);
