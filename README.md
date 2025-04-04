@@ -35,3 +35,13 @@ Total for 2025-04: $0.5601888 USD
 
 Total Cost 03/04/25 to 04/03/25: $0.7769432 USD
 ```
+
+## Get Your Admin Key Here
+
+https://platform.openai.com/settings/organization/admin-keys
+
+
+<p/>
+<a href="https://www.buymeacoffee.com/robwpdev" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a><br>
+If this module saves you time, helps your clients, or helps you do better work, I’d appreciate it.
+</p>
