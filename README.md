@@ -1,4 +1,4 @@
-# cloudfare-costs-api
+# openai-costs-api
 A PHP script to display the last X months of OpenAI costs per day with a total amount, up to 6 months.
 
 ## Useage
@@ -11,7 +11,7 @@ php path/scriptname OpenAI-Admin-Key [1-6]
 As an examplem, for 3 months:
 
 ```
-php ./cf-use.php sk-admin-123456-your-ADMIN-key-here 3
+php ./openai-use.php sk-admin-123456-your-ADMIN-key-here 3
 ```
 
 It will output:
